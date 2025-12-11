@@ -23,7 +23,7 @@ Nectar requires **Docker** and **Ollama** to be installed:
    - [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
    - [Docker Engine for Linux](https://docs.docker.com/engine/install/)
 
-2. **Ollama** — For local AI models
+2. **Ollama** — Recommened for local AI models
    - macOS/Linux: `curl -fsSL https://ollama.com/install.sh | sh`
    - Windows: [Download from ollama.com](https://ollama.com/download/windows)
 
