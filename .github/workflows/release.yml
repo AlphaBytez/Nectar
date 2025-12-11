@@ -1,0 +1,132 @@
+# NOTE: This is a TEMPLATE. The actual workflow should live in your PRIVATE
+# Nectar-src repo, not this public releases repo.
+#
+# This workflow:
+# 1. Triggers on version tags (v*)
+# 2. Builds Tauri app for macOS, Windows, Linux
+# 3. Creates a release in THIS public repo with the artifacts
+#
+# Prerequisites:
+# - Create a Personal Access Token (PAT) with 'repo' scope
+# - Add it as a secret named RELEASE_TOKEN in Nectar-src repo
+# - The PAT needs write access to AlphaBytez/Nectar
+
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v0.1.0-alpha)'
+        required: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: universal-apple-darwin
+            artifact: Nectar.dmg
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: Nectar-Setup.exe
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            artifact_deb: Nectar.deb
+            artifact_appimage: Nectar.AppImage
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+
+      - name: Install dependencies (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Nectar ${{ github.ref_name }}'
+          releaseBody: 'See the [changelog](https://github.com/AlphaBytez/Nectar/blob/main/CHANGELOG.md) for details.'
+          releaseDraft: true
+          prerelease: true
+          # Upload to the PUBLIC repo instead of this private one
+          # owner: AlphaBytez
+          # repo: Nectar
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build
+          path: |
+            src-tauri/target/release/bundle/dmg/*.dmg
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release in Public Repo
+        uses: softprops/action-gh-release@v1
+        with:
+          repository: AlphaBytez/Nectar
+          token: ${{ secrets.RELEASE_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          name: Nectar ${{ github.ref_name }}
+          draft: true
+          prerelease: true
+          files: |
+            artifacts/**/*.dmg
+            artifacts/**/*.exe
+            artifacts/**/*.deb
+            artifacts/**/*.AppImage
+          body: |
+            ## Nectar ${{ github.ref_name }}
+
+            ### Downloads
+            - **macOS**: Nectar.dmg (Intel & Apple Silicon)
+            - **Windows**: Nectar-Setup.exe
+            - **Linux**: Nectar.deb or Nectar.AppImage
+
+            ### Prerequisites
+            - [Docker](https://docs.docker.com/get-docker/)
+            - [Ollama](https://ollama.com)
+
+            ### First Launch
+            - macOS: Right-click → Open (to bypass Gatekeeper)
+            - Windows: Click "More info" → "Run anyway" on SmartScreen
+
+            See [Installation Guide](https://alphabytez.github.io/STING-CE-Docs/docs/nectar/installation/) for details.
