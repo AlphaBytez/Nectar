@@ -1,6 +1,6 @@
 # Nectar
 
-**Personal AI on Your Desktop** — Powered by [STING](https://github.com/AlphaBytez/STING-CE)
+**Personal AI on Your Desktop** — Powered by STING
 
 Nectar is a desktop app for private AI knowledge management. Chat with your documents, organize knowledge into encrypted Honey Jars, and keep everything local on your machine.
 
@@ -23,7 +23,7 @@ Nectar requires **Docker** and **Ollama** to be installed:
    - [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
    - [Docker Engine for Linux](https://docs.docker.com/engine/install/)
 
-2. **Ollama** — Recommened for local AI models
+2. **Ollama** — Recommended for local AI models
    - macOS/Linux: `curl -fsSL https://ollama.com/install.sh | sh`
    - Windows: [Download from ollama.com](https://ollama.com/download/windows)
 
@@ -44,7 +44,7 @@ First launch downloads ~1.5GB of Docker images. AI models add 2-8GB each.
 - **Privacy First** — Everything runs locally, no cloud required
 - **Works Offline** — After setup, no internet needed
 - **Passkey Auth** — Touch ID, Face ID, Windows Hello support
-- **Connect to STING Server** — Optional team features
+- **Connect to STING Hive** — Optional enterprise team features (coming soon)
 
 ## Quick Start
 
@@ -64,14 +64,14 @@ Nectar is in **alpha**. Expect bugs.
 
 ## Documentation
 
-- [Installation Guide](https://alphabytez.github.io/STING-CE-Docs/docs/nectar/installation/)
-- [First Steps](https://alphabytez.github.io/STING-CE-Docs/docs/nectar/first-steps/)
-- [Full Documentation](https://alphabytez.github.io/STING-CE-Docs/docs/)
+- [Installation Guide](https://stingassistant.com/nectar#download)
+- [FAQ](https://stingassistant.com/faq#getting-started)
+- [STING Website](https://stingassistant.com)
 
 ## Related Projects
 
-- [STING-CE](https://github.com/AlphaBytez/STING-CE) — Self-hosted STING Server for teams
-- [STING Website](https://stingassistant.com) — Learn more about STING
+- [STING Hive](https://stingassistant.com/hive) — Enterprise AI platform for teams
+- [AlphaBytez](https://github.com/AlphaBytez) — More from the team
 
 ## License
 
